@@ -1,0 +1,69 @@
+generated: '2026-08-08'
+method: searched
+source: https://pypi.org/pypi/nowgg/json
+name: nowgg
+description: >-
+  First-party command-line tool for uploading app builds to nowStudio. It authenticates
+  once with a publisher token, then pushes an APK either into the publisher's App
+  Library or onto a named test track, optionally triggering deployment of that track.
+package: packages/bluestacks-packages.yml
+version: 1.1.4
+latest_release: '2025-06-27'
+install:
+- method: pip
+  command: pip install nowgg
+  requires: Python 3.8+
+platforms:
+- macOS
+- Windows
+prerequisites:
+- name: App ID
+  description: Identifies the app on nowStudio.
+  where: https://docs.now.gg/nowstudio/publish#app-details
+- name: Publisher token
+  description: Identifies the publisher company; supplied to `nowgg init`.
+  where: https://docs.now.gg/nowstudio/start-using-nowstudio#ac-info
+commands:
+- command: nowgg init
+  summary: Store the nowStudio publisher token for subsequent calls.
+  flags:
+  - name: --token
+    required: true
+    description: Publisher token copied from the nowStudio Account Information section.
+  example: nowgg init --token "<your_publisherToken_from_nowStudio>"
+- command: nowgg upload
+  summary: Upload an APK build to the App Library or to a test track.
+  flags:
+  - name: --app_id
+    required: true
+    description: >-
+      nowStudio app id. A bare id ("1234") uploads to the App Library; a test-track
+      suffix ("1234_t1") targets test track 1.
+  - name: --file_path
+    required: true
+    description: Absolute path to the .apk to upload.
+  - name: --apk_version
+    required: true
+  - name: --version_code
+    required: true
+  - name: --deploy
+    required: false
+    description: >-
+      Triggers deployment on the specified test track. Only effective when --app_id
+      carries a test-track suffix.
+  example: nowgg upload --app_id 1234_t1 --file_path "/directory/sample.apk" --apk_version
+    1.0 --version_code 342 --deploy
+- command: nowgg -h
+  summary: Help. Also available per-subcommand as `nowgg init -h` and `nowgg upload -h`.
+flows:
+- name: Publish a build to a test track
+  steps:
+  - nowgg init --token <publisher_token>
+  - nowgg upload --app_id <app_id>_t1 --file_path <apk> --apk_version <v> --version_code
+    <code> --deploy
+  note: >-
+    Omitting the _tN suffix silently uploads to the App Library instead of the test
+    track — the CLI does not error on the mismatch.
+known_issues:
+- '"command not recognized" on Windows: add <python directory>\Scripts to PATH.'
+- 'permission errors: run the shell as Administrator.'

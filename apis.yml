@@ -1,18 +1,88 @@
 aid: bluestacks
 name: Bluestacks
-description: 'Bluestacks is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'BlueStacks is the Android app player and mobile-cloud gaming platform operated by now.gg,
+  Inc. (Campbell, California). The consumer product runs Android apps and games on Windows and macOS,
+  while the now.gg mobile cloud streams the same titles in a browser. The developer-facing surface is
+  published at docs.now.gg and is built around nowStudio (the publisher console) and nowSDK (Unity and
+  native Android modules for Payments, User Account Service, Rewarded Ads, Events and Utility). Two server-side
+  REST surfaces are documented publicly: a User Account Service OAuth 2.0 API on now.gg for token generation,
+  token verification, user info and session info, and a Payments API on payments-api.now.gg for server-side
+  purchase verification, consumption and subscription acknowledgement. now.gg also calls developer-hosted
+  webhooks for subscription and webshop order events, ships an official nowgg CLI on PyPI for uploading
+  app builds, and publishes an embeddable JavaScript module for running cloud games in an iframe. BlueStacks
+  AI is a separate, newer product line that packages a sandboxed local runtime for AI agents.'
+image: https://cdn-www.bluestacks.com/bs-images/logo-icon.png
 url: https://raw.githubusercontent.com/api-evangelist/bluestacks/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-08'
 modified: '2026-08-08'
 tags:
 - Company
-apis: []
+- Gaming
+- Cloud Gaming
+- Android
+- Mobile
+- Payments
+- In-App Purchases
+- Subscriptions
+- Developer Platform
+- App Distribution
+- Advertising
+- OAuth
+apis:
+- name: now.gg User Account Service API
+  description: OAuth 2.0 identity API for now.gg Login. Publishers exchange an authorization code for
+    a token and refresh_token, verify id_token/token server-side, and read user profile and session information
+    for the signed-in player. Documented base URL is https://now.gg with paths under /accounts/oauth2/v1/
+    and /accounts/users/v1/.
+  humanURL: https://docs.now.gg/user-account-service/api-reference
+  baseURL: https://now.gg
+  tags:
+  - Authentication
+  - OAuth
+  - Identity
+  - Users
+  properties:
+  - type: Documentation
+    url: https://docs.now.gg/user-account-service/overview
+  - type: APIReference
+    url: https://docs.now.gg/user-account-service/api-reference
+  - type: GettingStarted
+    url: https://docs.now.gg/user-account-service/start-integrating
+  - type: Authentication
+    url: authentication/bluestacks-authentication.yml
+  - type: OAuthScopes
+    url: scopes/bluestacks-scopes.yml
+- name: now.gg Payments Server API
+  description: Server-to-server in-app purchase API for publishers using now.gg Payments. Backends verify
+    a purchase token (verifyPurchase), mark a consumable as consumed (consumePurchase) and acknowledge
+    a subscription purchase (acknowledgePurchase). Authorization is a Payments API Key issued in nowStudio,
+    sent in the Authorization header with application/x-www-form-urlencoded bodies. The v1 verifyPayment
+    endpoint on payments.now.gg is deprecated in favour of v2 verifyPurchase.
+  humanURL: https://docs.now.gg/payments/references
+  baseURL: https://payments-api.now.gg
+  tags:
+  - Payments
+  - In-App Purchases
+  - Subscriptions
+  - Billing
+  properties:
+  - type: Documentation
+    url: https://docs.now.gg/payments/payments-overview
+  - type: APIReference
+    url: https://docs.now.gg/payments/references
+  - type: GettingStarted
+    url: https://docs.now.gg/payments/getting-started
+  - type: Webhooks
+    url: asyncapi/bluestacks-payments-webhooks.yml
+  - type: AsyncAPI
+    url: asyncapi/bluestacks-payments-asyncapi.yml
+  - type: ErrorCatalog
+    url: errors/bluestacks-error-codes.yml
+  - type: Sandbox
+    url: sandbox/bluestacks-sandbox.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +90,112 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://forgeglobal.com/bluestacks_stock/
+  url: https://www.bluestacks.com/
+- type: DeveloperPortal
+  url: https://docs.now.gg/
+- type: Documentation
+  url: https://docs.now.gg/get-ready/get-started
+- type: APIReference
+  url: https://docs.now.gg/user-account-service/api-reference
+- type: GettingStarted
+  url: https://docs.now.gg/get-ready/get-started
+- type: Console
+  url: https://studio.now.gg/
+- type: SignUp
+  url: https://docs.now.gg/nowstudio/create-a-developer-account
+- type: Support
+  url: https://support.bluestacks.com/hc/en-us
+- type: Blog
+  url: https://www.bluestacks.com/blog.html
+- type: GitHubOrganization
+  url: https://github.com/bluestacks
+- type: GitHubOrganization
+  name: now.gg
+  url: https://github.com/now-gg
+- type: TermsOfService
+  url: https://now.gg/terms-and-privacy.html#terms
+- type: PrivacyPolicy
+  url: https://now.gg/terms-and-privacy.html#eu-privacy
+- type: Packages
+  url: packages/bluestacks-packages.yml
+- type: SDKs
+  url: packages/bluestacks-packages.yml
+- type: CLI
+  url: cli/bluestacks-cli.yml
+- type: Components
+  url: components/bluestacks-components.yml
+- type: Sandbox
+  url: sandbox/bluestacks-sandbox.yml
+- type: Authentication
+  url: authentication/bluestacks-authentication.yml
+- type: OAuthScopes
+  url: scopes/bluestacks-scopes.yml
+- type: Conventions
+  url: conventions/bluestacks-conventions.yml
+- type: ErrorCatalog
+  url: errors/bluestacks-error-codes.yml
+- type: Lifecycle
+  url: lifecycle/bluestacks-lifecycle.yml
+- type: Conformance
+  url: conformance/bluestacks-conformance.yml
+- type: WellKnown
+  url: well-known/bluestacks-well-known.yml
+- type: SecurityTxt
+  url: well-known/bluestacks-security.txt
+- type: VulnerabilityDisclosure
+  url: security/bluestacks-vulnerability-disclosure.yml
+- type: Security
+  url: security/bluestacks-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/bluestacks-domain-security.yml
+- type: LLMsTxt
+  url: llms/bluestacks-llms.txt
+- type: Webhooks
+  url: asyncapi/bluestacks-payments-webhooks.yml
+- type: AsyncAPI
+  url: asyncapi/bluestacks-payments-asyncapi.yml
+x-contract-discovery:
+  checked: '2026-08-08'
+  result: no-machine-readable-spec
+  detail: now.gg documents four server-side REST operations on now.gg and three on payments-api.now.gg
+    in prose at docs.now.gg, plus two outbound webhook contracts, but publishes no OpenAPI, Swagger, AsyncAPI,
+    GraphQL SDL, JSON Schema or first-party Postman collection anywhere. Probed every base host, the docs
+    host and both GitHub orgs.
+  probes:
+  - url: https://payments-api.now.gg/openapi.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope; control path returns the identical body
+  - url: https://payments-api.now.gg/swagger.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - url: https://now.gg/openapi.json
+    status: 404
+  - url: https://docs.now.gg/openapi.json
+    status: 405
+  - url: https://www.bluestacks.com/openapi.json
+    status: 404
+  - url: https://payments-api.now.gg/.well-known/agent-card.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope, not an AgentCard
+  - url: https://now.gg/.well-known/agent-card.json
+    status: 404
+  - url: https://now.gg/mcp
+    status: 200
+    real: false
+    note: HTML docs shell; tools/list POST returns no JSON-RPC
+  github_code_search:
+    query: org:bluestacks filename:openapi
+    hits: 7
+    first_party: 0
+    note: all seven hits are AOSP third-party mirrors under external-*-a16 repos; org:now-gg returns 0
+  found:
+  - security.txt (payments-api.now.gg)
+  - llms.txt (bluestacks.ai)
+x-enrichment:
+  date: '2026-08-08'
+  status: enriched
+  artifacts_added: 16
+  pass: local-v1

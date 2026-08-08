@@ -1,0 +1,43 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/user-account-service/api-reference
+docs: https://docs.now.gg/user-account-service/api-reference
+note: >-
+  now.gg publishes no scopes or permissions reference page. The scope vocabulary below
+  is what the API reference itself documents: the `scope` claim inside a decoded
+  now.gg `token` is described as "Scope of authorization: email/profile/authorization".
+  Those three values are the entire published surface. No per-scope description, no
+  scope-request parameter, and no mapping from scope to endpoint is documented
+  anywhere, so the descriptions below are the docs' own wording and nothing more.
+schemes:
+- name: nowggOAuth2
+  source: https://docs.now.gg/user-account-service/api-reference
+  flows:
+  - flow: authorizationCode
+    tokenUrl: https://now.gg/accounts/oauth2/v1/token
+  - flow: refreshToken
+    tokenUrl: https://now.gg/accounts/oauth2/v1/token
+scopes:
+- scope: email
+  description: Scope of authorization covering the player's email address.
+  evidence: '`scope` claim sample value in the decoded-token reference'
+  flows:
+  - authorizationCode
+- scope: profile
+  description: Scope of authorization covering the player's profile information.
+  evidence: enumerated in the `scope` claim description (email/profile/authorization)
+  flows:
+  - authorizationCode
+- scope: authorization
+  description: Scope of authorization covering authorization itself.
+  evidence: enumerated in the `scope` claim description (email/profile/authorization)
+  flows:
+  - authorizationCode
+gaps:
+- No scopes/permissions reference page exists; the vocabulary is only visible as a
+  sample claim value inside the token reference.
+- No documented way for a client to REQUEST a scope — no scope parameter appears in
+  the token or verify-token request bodies.
+- No mapping from scope to the endpoints it authorizes (userinfo vs sessioninfo).
+- The Payments API is key-authorized, not OAuth-scoped, so none of these scopes apply
+  to it.

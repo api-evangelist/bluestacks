@@ -1,0 +1,152 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/nowstudio/payments
+docs:
+- https://docs.now.gg/nowstudio/payments
+- https://docs.now.gg/nowstudio/webshop
+summary: >-
+  now.gg's event surface is entirely OUTBOUND and inverted: rather than the publisher
+  subscribing to now.gg events, the publisher IMPLEMENTS an endpoint to now.gg's
+  published specification and registers its URL in nowStudio. now.gg then calls it.
+  There are two such contracts — SubscriptionStatusCallback (subscription lifecycle)
+  and PaymentsProcessingCallback (webshop order completion) — and they share one
+  payload envelope and one credential.
+direction: provider-calls-publisher
+delivery:
+  transport: HTTPS
+  method: POST
+  content_type: application/json
+  registration: >-
+    Callback URL is configured per app in nowStudio under Payment Settings (separately
+    for Subscriptions and for Webshop).
+  authentication:
+    scheme: apiKey
+    header: Authorization
+    name: Webhook API Key
+    issued_by: now.gg
+    where: nowStudio > View Details > Webhook API Key (viewable and regenerable)
+    note: >-
+      now.gg presents this key TO the publisher's endpoint; the publisher verifies it
+      to authenticate the caller. It is a shared secret in a header, not a signature —
+      there is no HMAC body signature and no timestamp/replay protection documented.
+  acknowledgement:
+    expected_status: 200
+    expected_body: '{"success": true}'
+    failure_body: '{"success": false, "reason": "reason_for_failure"}'
+    detail: >-
+      now.gg waits for the publisher's response. Anything other than HTTP 200 with
+      success true is retried "for some time" — the retry count, backoff and total
+      window are not published.
+  ordering: undocumented
+  deduplication: undocumented
+  signature: none
+webhooks:
+- name: SubscriptionStatusCallback
+  implemented_by: publisher
+  purpose: Subscription lifecycle status updates.
+  docs: https://docs.now.gg/nowstudio/payments
+  method: POST
+  headers:
+  - name: Authorization
+    value: <Webhook API Key>
+  - name: Content-type
+    value: application/json
+  events:
+  - name: WEBSHOP_ITEM_PURCHASED
+    description: Sent when a Webshop item is purchased.
+  - name: SUBSCRIPTION_PURCHASED
+    description: Sent when a Subscription is purchased.
+  - name: SUBSCRIPTION_RENEWED
+    description: Sent when a Subscription is renewed.
+  - name: SUBSCRIPTION_CANCELLED
+    description: Sent when a Subscription is cancelled.
+  - name: SUBSCRIPTION_EXPIRED
+    description: Sent when a Subscription has expired.
+  payload:
+    notificationType:
+      type: string
+      description: The event name, one of the values enumerated above.
+    data:
+      orderId:
+        type: string
+        example: '1-202402110116343'
+        description: Order ID associated with the purchase order.
+      packageName:
+        type: string
+        example: gg.now.sample.app
+      productId:
+        type: string
+        example: SampleProduct
+      eventTime:
+        type: long
+        example: 1752895192000
+        description: Epoch timestamp of the order in milliseconds.
+      expiryTime:
+        type: long
+        example: 1707965194000
+        description: Epoch milliseconds when the subscription expires or renews.
+      amount:
+        type: float
+        example: 24.99
+      isTestOrder:
+        type: boolean
+      currency:
+        type: string
+        example: USD
+      paymentId:
+        type: string
+        example: '1234'
+      developerPayload:
+        type: string
+        example: '{UID: abc}'
+        description: Developer-specified supplemental information carried through the order.
+  testable: true
+  test_tool: nowStudio > Payments > Testing Webhook
+- name: PaymentsProcessingCallback
+  implemented_by: publisher
+  purpose: Webshop order completion, so the publisher can grant the purchased product.
+  docs: https://docs.now.gg/nowstudio/webshop
+  method: POST
+  headers:
+  - name: Authorization
+    value: <Webhook API Key>
+  - name: Content-type
+    value: application/json
+  events:
+  - name: WEBSHOP_ITEM_PURCHASED
+    description: Sent when the user's payment is completed.
+  payload:
+    notificationType:
+      type: string
+      enum:
+      - WEBSHOP_ITEM_PURCHASED
+    data:
+      orderId:
+        type: string
+        example: '1-202402110116343'
+      packageName:
+        type: string
+        example: gg.now.sample.app
+      productId:
+        type: string
+        example: SampleProduct
+      eventTime:
+        type: long
+        example: 1707965194000
+      paymentId:
+        type: string
+  completion_rule: >-
+    now.gg marks the purchase order completed only after receiving HTTP 200 with
+    success true.
+asyncapi_published: false
+asyncapi_derived: bluestacks-payments-asyncapi.yml
+gaps:
+- No AsyncAPI, JSON Schema or Postman collection is published for either callback.
+- No body signature (HMAC) and no timestamp — a leaked Webhook API Key is fully
+  replayable.
+- Retry policy is described qualitatively ("for some time") with no numbers.
+- WEBSHOP_ITEM_PURCHASED is documented on BOTH callbacks with different data fields
+  (the subscription variant adds amount, currency, isTestOrder, expiryTime and
+  developerPayload), and the docs do not say which one a webshop purchase actually
+  hits when both callbacks are configured.
+- No event ID, no delivery ID, and no documented deduplication key.

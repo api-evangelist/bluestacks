@@ -1,0 +1,222 @@
+x-provenance:
+  generated: '2026-08-08'
+  method: derived
+  source: https://docs.now.gg/nowstudio/payments
+  derived_from: asyncapi/bluestacks-payments-webhooks.yml
+  note: >-
+    now.gg publishes NO AsyncAPI. This document is an API Evangelist derivation that
+    transcribes the callback contract now.gg publishes in prose at
+    docs.now.gg/nowstudio/payments and docs.now.gg/nowstudio/webshop into AsyncAPI
+    3.0.0. Every channel, message, field, type and example below appears verbatim in
+    those pages; nothing has been invented. It is NOT a provider artifact and must not
+    be presented as one. The address is the PUBLISHER'S own endpoint — now.gg is the
+    sender, the publisher is the receiver — so the server URL is a placeholder the
+    integrator substitutes.
+asyncapi: 3.0.0
+info:
+  title: now.gg Payments Callbacks (derived)
+  version: '1.0.0'
+  description: >-
+    Outbound webhook contract for now.gg Payments. now.gg POSTs subscription and
+    webshop order events to an endpoint the publisher implements and registers in
+    nowStudio. Derived by API Evangelist from now.gg's published prose reference.
+  contact:
+    name: now.gg developer support
+    email: dev-support@now.gg
+  externalDocs:
+    url: https://docs.now.gg/nowstudio/payments
+servers:
+  publisherCallback:
+    host: publisher.example.com
+    protocol: https
+    description: >-
+      The publisher's own callback host, registered in nowStudio under Payment
+      Settings. Substitute your own.
+channels:
+  subscriptionStatusCallback:
+    address: /subscription-status-callback
+    title: SubscriptionStatusCallback
+    description: >-
+      Publisher-implemented endpoint that receives subscription lifecycle events from
+      now.gg.
+    messages:
+      subscriptionStatusEvent:
+        $ref: '#/components/messages/SubscriptionStatusEvent'
+  paymentsProcessingCallback:
+    address: /payments-processing-callback
+    title: PaymentsProcessingCallback
+    description: >-
+      Publisher-implemented endpoint that receives webshop order completion events
+      from now.gg.
+    messages:
+      webshopItemPurchased:
+        $ref: '#/components/messages/WebshopItemPurchased'
+operations:
+  receiveSubscriptionStatus:
+    action: receive
+    channel:
+      $ref: '#/channels/subscriptionStatusCallback'
+    summary: Receive a subscription lifecycle event from now.gg.
+    security:
+    - $ref: '#/components/securitySchemes/webhookApiKey'
+    messages:
+    - $ref: '#/channels/subscriptionStatusCallback/messages/subscriptionStatusEvent'
+    reply:
+      address:
+        location: '$message.header#/'
+      channel:
+        $ref: '#/channels/subscriptionStatusCallback'
+      messages:
+      - $ref: '#/components/messages/CallbackAck'
+  receivePaymentsProcessing:
+    action: receive
+    channel:
+      $ref: '#/channels/paymentsProcessingCallback'
+    summary: Receive a webshop order completion event from now.gg.
+    security:
+    - $ref: '#/components/securitySchemes/webhookApiKey'
+    messages:
+    - $ref: '#/channels/paymentsProcessingCallback/messages/webshopItemPurchased'
+components:
+  securitySchemes:
+    webhookApiKey:
+      type: httpApiKey
+      name: Authorization
+      in: header
+      description: >-
+        Webhook API Key issued by now.gg in nowStudio. now.gg presents it to the
+        publisher's endpoint. There is no body signature.
+  messages:
+    SubscriptionStatusEvent:
+      name: SubscriptionStatusEvent
+      title: Subscription status update
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SubscriptionNotification'
+    WebshopItemPurchased:
+      name: WebshopItemPurchased
+      title: Webshop item purchased
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/WebshopNotification'
+    CallbackAck:
+      name: CallbackAck
+      title: Publisher acknowledgement
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/Ack'
+  schemas:
+    SubscriptionNotification:
+      type: object
+      required:
+      - notificationType
+      - data
+      properties:
+        notificationType:
+          type: string
+          description: The subscription status event.
+          enum:
+          - WEBSHOP_ITEM_PURCHASED
+          - SUBSCRIPTION_PURCHASED
+          - SUBSCRIPTION_RENEWED
+          - SUBSCRIPTION_CANCELLED
+          - SUBSCRIPTION_EXPIRED
+        data:
+          type: object
+          properties:
+            orderId:
+              type: string
+              description: Order ID associated with the purchase order.
+              examples:
+              - '1-202402110116343'
+            packageName:
+              type: string
+              description: Package name of the publisher's app.
+              examples:
+              - gg.now.sample.app
+            productId:
+              type: string
+              description: Product ID of the product purchased by the user.
+              examples:
+              - SampleProduct
+            eventTime:
+              type: integer
+              format: int64
+              description: Epoch timestamp associated with the order, in milliseconds.
+              examples:
+              - 1752895192000
+            expiryTime:
+              type: integer
+              format: int64
+              description: Epoch milliseconds when the subscription expires or is set to renew.
+              examples:
+              - 1707965194000
+            amount:
+              type: number
+              format: float
+              description: Amount associated with the order.
+              examples:
+              - 24.99
+            isTestOrder:
+              type: boolean
+              description: True when the order was generated by an internal tester.
+            currency:
+              type: string
+              description: Currency associated with the in-app purchase order.
+              examples:
+              - USD
+            paymentId:
+              type: string
+              examples:
+              - '1234'
+            developerPayload:
+              type: string
+              description: Developer-specified supplemental information about an order.
+              examples:
+              - '{UID: abc}'
+    WebshopNotification:
+      type: object
+      required:
+      - notificationType
+      - data
+      properties:
+        notificationType:
+          type: string
+          enum:
+          - WEBSHOP_ITEM_PURCHASED
+          description: Sent when the user's payment is completed.
+        data:
+          type: object
+          properties:
+            orderId:
+              type: string
+              examples:
+              - '1-202402110116343'
+            packageName:
+              type: string
+              examples:
+              - gg.now.sample.app
+            productId:
+              type: string
+              examples:
+              - SampleProduct
+            eventTime:
+              type: integer
+              format: int64
+              examples:
+              - 1707965194000
+            paymentId:
+              type: string
+    Ack:
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          type: boolean
+          description: >-
+            Must be true, with HTTP 200, or now.gg retries. For the webshop callback,
+            the order is only marked completed once this is received.
+        reason:
+          type: string
+          description: Optional. Required only when success is false.

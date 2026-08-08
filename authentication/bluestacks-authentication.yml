@@ -1,0 +1,141 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/user-account-service/api-reference
+docs:
+- https://docs.now.gg/user-account-service/api-reference
+- https://docs.now.gg/user-account-service/authenticate-with-a-backend-server
+- https://docs.now.gg/payments/references/verifypurchase
+- https://docs.now.gg/nowstudio/start-using-nowstudio
+note: >-
+  Derived by reading the published docs, not from an OpenAPI — now.gg publishes no
+  machine-readable specification for any of these surfaces. Four distinct credentials
+  are in play and they are not interchangeable: an OAuth 2.0 client_id/client_secret
+  pair for player login, a Payments API Key for the server-side purchase APIs, a
+  Publisher Token for nowStudio/CLI operations, and a Webhook API Key that now.gg
+  presents to the publisher's own callback endpoint.
+summary:
+  types:
+  - oauth2
+  - http
+  - apiKey
+  api_key_in:
+  - header
+  oauth2_flows:
+  - authorizationCode
+  - refreshToken
+  openid_connect_discovery: false
+  mtls: false
+schemes:
+- name: nowggOAuth2
+  type: oauth2
+  api: now.gg User Account Service API
+  flows:
+  - flow: authorizationCode
+    tokenUrl: https://now.gg/accounts/oauth2/v1/token
+    grant_type: code
+    note: >-
+      The authorization code is delivered to the app by the now.gg Login flow / account
+      manager; no public authorization endpoint URL is documented in the API reference.
+  - flow: refreshToken
+    tokenUrl: https://now.gg/accounts/oauth2/v1/token
+    grant_type: refresh_token
+  credentials:
+    client_id: issued per app in nowStudio under OAuth 2.0 Credentials
+    client_secret: issued per app in nowStudio under OAuth 2.0 Credentials
+    guidance: >-
+      Docs explicitly warn against sharing one credential pair across apps, because
+      revoking one app's access would interrupt all of them.
+  tokens:
+  - name: id_token
+    purpose: authentication — asserts who the player is
+    format: JWT-shaped, verified via the verify-token endpoint
+    claims:
+    - iss
+    - sub
+    - aud
+    - exp
+    - iat
+    - auth_time
+    - email
+    - mobile
+    - userId
+    - name
+    - picture
+    - countryCode
+    issuer: https://now.gg
+    used_by: basic login flow
+  - name: token
+    purpose: authorization — bearer credential for the protected user APIs
+    claims:
+    - iss
+    - tokenId
+    - aud
+    - sessionId
+    - userId
+    - scope
+    - iat
+    - exp
+    issuer: https://now.gg
+    used_by: advanced (token-based) login integration flow
+  - name: refresh_token
+    purpose: mint a new `token` after expiry
+  verification:
+    endpoint: POST https://now.gg/accounts/oauth2/v1/verify-token
+    body:
+    - token_type
+    - token
+    - client_id
+    - client_secret
+    note: >-
+      client_secret is required when token_type is `token`, optional when it is
+      `id_token`. Verification is a provider-side call rather than local JWKS
+      validation — no JWKS URI or OIDC discovery document is published.
+- name: nowggBearer
+  type: http
+  scheme: bearer
+  api: now.gg User Account Service API
+  header: 'Authorization: Bearer <token>'
+  applies_to:
+  - GET /accounts/users/v1/userinfo
+  - GET /accounts/users/v1/sessioninfo
+- name: paymentsApiKey
+  type: apiKey
+  in: header
+  name_in_request: Authorization
+  api: now.gg Payments Server API
+  note: >-
+    The Payments API Key is sent as a RAW value in the Authorization header — no
+    Bearer/Basic scheme prefix, contrary to RFC 7235. Issued in the nowStudio
+    credentials section.
+  applies_to:
+  - POST /v2/sellers/order/verifyPurchase
+  - POST /v2/order/consumePurchase
+  - POST /v2/seller/order/acknowledgepurchase
+  errors:
+  - code: 3900
+    message: INVALID_AUTHORIZATION_KEY
+- name: publisherToken
+  type: apiKey
+  in: header
+  name_in_request: publisherToken
+  api: now.gg Payments (v1, deprecated) and nowStudio CLI
+  note: >-
+    Company-level credential copied from nowStudio > Account Information. Used by the
+    deprecated v1 verifyPayment endpoint and by `nowgg init` in the CLI.
+- name: webhookApiKey
+  type: apiKey
+  in: header
+  name_in_request: Authorization
+  direction: inbound-to-publisher
+  note: >-
+    Reversed direction — now.gg presents this key to the publisher's own
+    SubscriptionStatusCallback / PaymentsProcessingCallback endpoint so the publisher
+    can authenticate the caller. Generated and regenerated in nowStudio.
+gaps:
+- No /.well-known/openid-configuration and no /.well-known/oauth-authorization-server
+  on any host, so neither OIDC nor RFC 8414 discovery is possible.
+- No published JWKS endpoint; token validation requires a round trip to now.gg.
+- No documented authorization endpoint URL, redirect_uri handling, PKCE or state
+  parameter in the API reference.
+- The Payments API Key is a bare header value with no scheme prefix and no documented
+  rotation policy.

@@ -1,0 +1,88 @@
+generated: '2026-08-08'
+method: searched
+source: https://pypi.org/pypi/nowgg/json + https://docs.now.gg/nowsdk/nowsdk-download
+note: >-
+  now.gg publishes exactly one client library to a public package registry — the
+  `nowgg` Python CLI on PyPI. The nowSDK client modules for Unity and native Android
+  are NOT published to Maven Central, JitPack, npm or any other public registry; they
+  ship as .aar / .unitypackage files inside a download bundle obtained from
+  docs.now.gg. The web embed module is a versioned script on the now.gg CDN. Searches
+  of npm (`nowgg`, `now.gg sdk`) returned no first-party packages.
+packages:
+- language: python
+  registry: pypi
+  name: nowgg
+  url: https://pypi.org/project/nowgg/
+  install: pip install nowgg
+  version: 1.1.4
+  first_release: '2024-03-14'
+  latest_release: '2025-06-27'
+  releases: 15
+  author_email: cloudmaster@now.gg
+  official: true
+  kind: cli
+  description: >-
+    nowStudio App Upload CLI. Authenticates with a nowStudio publisher token and
+    uploads APK builds to the App Library or to a test track, optionally triggering
+    deployment.
+- language: javascript
+  registry: cdn
+  name: ifp-sdk
+  url: https://cdn.now.gg/external/sdk/ifp-sdk-1.2.2.min.js
+  install: <script type="text/javascript" src="https://cdn.now.gg/external/sdk/ifp-sdk-1.2.2.min.js"></script>
+  version: 1.2.2
+  official: true
+  kind: browser-sdk
+  description: >-
+    now.gg Embed Module (NowIfp). Embeds a cloud-streamed Android game in an iframe on
+    a publisher's own web page and brokers events between the page and the app.
+  docs: https://docs.now.gg/get-ready/additional-guides
+- language: csharp
+  registry: vendor-download
+  name: NowGGUnitySdk.unitypackage
+  url: https://docs.now.gg/nowsdk/nowsdk-download
+  official: true
+  kind: sdk
+  description: >-
+    nowSDK for Unity. Single .unitypackage containing the Payments, Login (User
+    Account Service), Rewarded Ads, Events and Utility modules, plus login button
+    assets and a demo project.
+  note: distributed as a download bundle, not via a public package registry
+- language: java
+  registry: vendor-download
+  name: nowSDK for Native Android
+  url: https://docs.now.gg/nowsdk/nowsdk-download
+  official: true
+  kind: sdk
+  artifacts:
+  - payments.aar
+  - rewardedads.aar
+  - utility.aar
+  - events.aar
+  description: >-
+    nowSDK for native Android. Per-module .aar archives dropped into the app's libs/
+    directory and wired with `implementation fileTree(dir: 'libs', include: ['*.aar'])`.
+    Public API lives under the gg.now.billingclient.api package.
+  note: distributed as a download bundle, not via Maven Central or JitPack
+registries_searched:
+- registry: pypi
+  result: hit
+  query: nowgg
+- registry: npm
+  result: none
+  query: nowgg / "now.gg sdk"
+- registry: maven-central
+  result: none
+  note: docs reference no Maven coordinates; SDK ships as loose .aar files
+- registry: jitpack
+  result: none
+  note: jitpack.io appears in docs only as a repository entry for a third-party store SDK
+summary:
+  total: 5
+  official: 5
+  on_public_registry: 1
+  languages:
+  - python
+  - javascript
+  - csharp
+  - java

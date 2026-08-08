@@ -1,0 +1,117 @@
+generated: '2026-08-08'
+method: probed
+source: live GET of /.well-known/* on every apis.yml host
+note: >-
+  payments-api.now.gg answers HTTP 200 with the API gateway envelope
+  {"success":false,"code":150,"codeMsg":"interface not exist"} for EVERY unknown path,
+  including /.well-known/*. Those 200s are soft-404s and are recorded as such below —
+  only /.well-known/security.txt returned a genuine document (Content-Type text/plain,
+  RFC 9116 body). A control path (/zzz-ae-control-9f3a) was fetched on each host to
+  separate real hits from catch-alls.
+hosts:
+- host: https://payments-api.now.gg
+  control_path_status: 200
+  control_path_is_soft_404: true
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    real: true
+    file: bluestacks-security.txt
+  - path: /.well-known/openid-configuration
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/api-catalog
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/agent-card.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+  - path: /.well-known/agent.json
+    status: 200
+    real: false
+    note: soft-404 gateway envelope
+- host: https://now.gg
+  control_path_status: 404
+  control_path_is_soft_404: false
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://www.bluestacks.com
+  control_path_status: 404
+  control_path_is_soft_404: false
+  note: >-
+    every /.well-known/* path returns 403 from the edge (WAF), while an ordinary
+    unknown path returns a clean 404 — the /.well-known/ prefix itself is blocked
+    rather than empty.
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+- host: https://docs.now.gg
+  documents:
+  - path: /.well-known/security.txt
+    status: 405
+  - path: /.well-known/agent-card.json
+    status: 405
+  - path: /.well-known/agent.json
+    status: 405
+- host: https://bluestacks.ai
+  note: >-
+    static object host; unknown paths return an S3 AccessDenied 403. /llms.txt and
+    /robots.txt exist as published objects.
+  documents:
+  - path: /llms.txt
+    status: 200
+    content_type: text/plain
+    real: true
+    file: ../llms/bluestacks-llms.txt
+  - path: /robots.txt
+    status: 200
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+summary:
+  documents_found: 2
+  security_txt: true
+  openid_configuration: false
+  oauth_authorization_server: false
+  api_catalog: false
+  agent_card: false

@@ -1,0 +1,128 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/get-ready/additional-guides
+docs:
+- https://docs.now.gg/get-ready/additional-guides
+- https://docs.now.gg/nowstudio/webshop
+- https://docs.now.gg/user-account-service/integrating-login
+summary: >-
+  now.gg ships three client-side surfaces distinct from its server SDKs — a JavaScript
+  embed module that runs a cloud-streamed Android game inside an iframe on the
+  publisher's own page, a hosted Webshop storefront now.gg builds and hosts for the
+  publisher, and a set of branded login button assets bundled with nowSDK.
+families:
+- name: Embed Module (NowIfp)
+  kind: browser-javascript
+  loader: https://cdn.now.gg/external/sdk/ifp-sdk-1.2.2.min.js
+  version: 1.2.2
+  install: <script type="text/javascript" src="https://cdn.now.gg/external/sdk/ifp-sdk-1.2.2.min.js"></script>
+  docs: https://docs.now.gg/get-ready/additional-guides
+  global: NowIfp
+  description: >-
+    Embeds a now.gg cloud-streamed game in an iframe on the publisher's website, with
+    a bidirectional event bridge between the host page and the Android app running in
+    the cloud.
+  entrypoints:
+  - name: NowIfp.init
+    parameters:
+    - name: clientId
+      type: string
+      required: true
+      description: Unique client identifier.
+    - name: appId
+      type: string
+      required: true
+      description: >-
+        nowStudio app id. Different for testing and production — production "1234",
+        test track "1234_t1".
+    - name: iframeParentElement
+      type: element
+      required: true
+      description: DOM element the embedded player is rendered into.
+    - name: customData
+      type: object
+      required: false
+      description: App-specific data passed to the now.gg backend.
+    - name: appLaunchData
+      type: object
+      required: false
+      description: >-
+        Extra data serialized and passed to the app as launch intent extras.
+    - name: appEventCallback
+      type: function
+      required: false
+      description: Handles events emitted by the Android app (event.name, event.data).
+    - name: sdkEventCallback
+      type: function
+      required: false
+      description: Handles module-level events (event.name, event.msg).
+    - name: isNowLoginEnabled
+      type: boolean
+      required: false
+      description: When true, now.gg Login is triggered at app launch.
+  companion_module:
+    name: nowSDK Events module
+    required_for: passing events and launch data between the host page and the app
+    docs: https://docs.now.gg/events/overview
+    methods:
+    - openUrl
+    - sendEventToBrowser
+    - getAppLaunchDataBundle
+    - getAppLaunchDataProperty
+- name: now.gg Webshop
+  kind: hosted-storefront
+  docs: https://docs.now.gg/nowstudio/webshop
+  description: >-
+    A now.gg-built and now.gg-hosted web storefront for a publisher's in-app products,
+    configured entirely in nowStudio (assets, price templates, callback URL, privacy
+    policy) and published to a now.gg URL. Publishers can instead point nowStudio at
+    an existing storefront of their own.
+  configuration_surface: nowStudio
+  asset_specs:
+  - name: Game Icon
+    dimensions: 512x512
+    formats:
+    - JPG
+    - JPEG
+    - PNG
+    max_size: 10 MB
+  - name: Game Logo
+    dimensions: 550x300
+    formats:
+    - PNG
+    - SVG
+    max_size: 10 MB
+  - name: Banner Image
+    dimensions: 1920x1080
+    formats:
+    - JPEG
+    max_size: 10 MB
+  - name: Banner Video (landscape)
+    dimensions: 1920x1080
+    formats:
+    - MP4
+    max_size: 50 MB
+  - name: Banner Video (portrait)
+    dimensions: 720x1280
+    formats:
+    - MP4
+    max_size: 50 MB
+  order_completion: >-
+    Requires the publisher to implement PaymentsProcessingCallback — see
+    asyncapi/bluestacks-payments-webhooks.yml.
+- name: now.gg Login button assets
+  kind: ui-assets
+  docs: https://docs.now.gg/user-account-service/integrating-login
+  bundled_with: nowSDK download (Unity and native Android)
+  assets:
+  - login_button_now_gg.xml
+  - now_gg_logo_small.xml
+  - nowggLogin.png
+  - nowggLoginCustom.png
+  description: >-
+    Branded sign-in button drawables and logos for rendering the now.gg Login entry
+    point inside an Android or Unity app.
+gaps:
+- No web component / custom element library, no React or Vue bindings.
+- The embed module is a pinned CDN URL with no npm package and no integrity hash in
+  the documented snippet.

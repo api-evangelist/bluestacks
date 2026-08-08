@@ -1,0 +1,75 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/payments/references
+docs:
+- https://docs.now.gg/payments/references/verifypayment
+- https://docs.now.gg/payments/references/verifypurchase
+- https://docs.now.gg/payments/references/server-side-configuration
+versioning:
+  scheme: uri-path
+  current:
+    payments: v2
+    accounts: v1
+  docs: https://docs.now.gg/payments/references
+  note: >-
+    The v1→v2 payments migration also moved host — v1 lived on payments.now.gg, v2
+    lives on payments-api.now.gg — so a version bump here is a host change too.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    Individual endpoints and fields ARE marked deprecated in the reference, and the
+    verifyPayment page carries a prominent "Deprecated" banner pointing at its
+    replacement. But no deprecation POLICY is published: no notice period, no sunset
+    date, no RFC 8594 Sunset/Deprecation headers, and no migration timetable. The
+    deprecated v1 endpoint remains documented with no removal date.
+deprecated_operations:
+- operation: POST https://payments.now.gg/v1/console/order/verifyPayment
+  name: Verify Payment API
+  replaced_by: POST https://payments-api.now.gg/v2/sellers/order/verifyPurchase
+  sunset_date: null
+  source: https://docs.now.gg/payments/references/verifypayment
+deprecated_fields:
+- field: productId
+  operations:
+  - verifyPurchase
+  - consumePurchase
+  note: marked deprecated in the request body
+- field: type
+  operations:
+  - verifyPurchase
+  - consumePurchase
+  note: store selector; marked deprecated in the request body
+- field: purchaseTimeMillis
+  operations:
+  - verifyPurchase
+  replaced_by: purchaseTime
+  note: marked deprecated in the response
+sla:
+  url: null
+  uptime_target: null
+  published: false
+status_page:
+  url: null
+  published: false
+  probed:
+  - url: https://status.now.gg/
+    result: DNS does not resolve
+  - url: https://status.bluestacks.com/
+    result: DNS does not resolve
+support:
+  developer_contact: dev-support@now.gg
+  consumer_support: https://support.bluestacks.com/hc/en-us
+  general: support@now.gg
+known_inconsistencies:
+- The verifyPurchase path is documented BOTH as /v2/sellers/order/verifyPurchase and
+  as /v2/seller/order/verifyPurchase (singular) on different pages of the same
+  reference. acknowledgePurchase is documented only as
+  /v2/seller/order/acknowledgepurchase (singular, all-lowercase verb), while
+  consumePurchase drops the seller segment entirely (/v2/order/consumePurchase).
+gaps:
+- No published deprecation policy, notice period or sunset dates.
+- No status page and no SLA.
+- No RFC 8594 Sunset or Deprecation response headers.

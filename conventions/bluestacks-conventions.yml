@@ -1,0 +1,115 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/
+docs:
+- https://docs.now.gg/user-account-service/api-reference
+- https://docs.now.gg/payments/references
+- https://docs.now.gg/nowstudio/payments
+note: >-
+  Cross-cutting semantics read from the published docs. There is no OpenAPI to derive
+  from, so every entry below is either quoted from the reference pages or recorded as
+  absent. Absences are deliberate findings, not gaps in our reading.
+authentication:
+  style: mixed
+  detail: >-
+    Four unrelated credentials — OAuth 2.0 client pair, Payments API Key, Publisher
+    Token, Webhook API Key. See authentication/bluestacks-authentication.yml.
+  bearer_prefix_used: partially
+  note: >-
+    The accounts API uses `Authorization: Bearer <token>`; the payments API uses
+    `Authorization: <raw_key>` with no scheme.
+content_types:
+  request:
+  - application/json
+  - application/x-www-form-urlencoded
+  response:
+  - application/json
+  note: >-
+    Inconsistent between surfaces — the accounts API takes application/json, the
+    payments v2 API takes application/x-www-form-urlencoded.
+versioning:
+  scheme: uri-path
+  detail: >-
+    Version is the first path segment after the host on payments-api.now.gg (v1, v2)
+    and appears mid-path on the accounts API (/accounts/oauth2/v1/,
+    /accounts/users/v1/).
+  current:
+    payments: v2
+    accounts: v1
+  header_versioning: false
+  date_versioning: false
+error_envelope:
+  documented: true
+  format: proprietary
+  shape: '{success, code, codeMsg, data}'
+  http_status_signals_error: false
+  detail: >-
+    Failure is carried in the body while the HTTP status remains 200 — including for
+    unrouted paths, which return {"success":false,"code":150,"codeMsg":"interface not
+    exist"} with a 200. Clients must branch on `success`, never on the status code.
+  catalog: errors/bluestacks-error-codes.yml
+idempotency:
+  supported: false
+  header: null
+  detail: >-
+    No idempotency key, no request-deduplication contract, and no retry-safety
+    statement is documented for any endpoint. The nearest thing is a natural
+    idempotency key — `purchaseToken` — but the docs never state that a repeated
+    consumePurchase or acknowledgePurchase with the same token is safe; error codes
+    103 (PRODUCT_ALREADY_CONSUMED) and 104 (PRODUCT_ALREADY_ACKNOWLEDGED) imply a
+    repeat is rejected rather than absorbed.
+  recommendation: >-
+    Document whether purchaseToken makes the v2 write endpoints idempotent, and
+    accept an Idempotency-Key header on them.
+pagination:
+  supported: false
+  detail: >-
+    None of the documented endpoints return a collection, so no pagination contract
+    exists.
+rate_limiting:
+  documented: false
+  headers: []
+  detail: >-
+    No rate limits, quotas, or RateLimit/Retry-After headers are documented for any
+    surface.
+request_tracing:
+  request_id_header: null
+  documented: false
+retries:
+  inbound: undocumented
+  outbound: documented
+  detail: >-
+    For webhooks now.gg calls out to the publisher, retry behaviour IS specified: if
+    the publisher's endpoint does not return HTTP 200 with `success: true`, now.gg
+    "will keep retrying for some time". The retry window, backoff and maximum attempt
+    count are not published.
+field_expansion:
+  supported: false
+metadata:
+  supported: true
+  field: developerPayload
+  detail: >-
+    A developer-specified string carried through the purchase and echoed back on
+    verifyPurchase and on webhook payloads. The publisher's only channel for
+    correlating an order to its own user.
+test_mode:
+  supported: true
+  signal: isTestOrder
+  detail: >-
+    Purchases made by internal testers are flagged with `isTestOrder: true` on
+    verification responses and webhook payloads. Test tracks are addressed by an
+    app-id suffix (`1234_t1`) rather than by a separate key or host.
+  artifact: sandbox/bluestacks-sandbox.yml
+token_conventions:
+  purchase_token_prefix: '-nowgg-'
+  detail: >-
+    Documented in the No Code Payment server-side configuration guide as the way to
+    route a purchase token to now.gg verification when a publisher aggregates several
+    stores.
+cross_links:
+  authentication: authentication/bluestacks-authentication.yml
+  scopes: scopes/bluestacks-scopes.yml
+  errors: errors/bluestacks-error-codes.yml
+  lifecycle: lifecycle/bluestacks-lifecycle.yml
+  webhooks: asyncapi/bluestacks-payments-webhooks.yml
+  sandbox: sandbox/bluestacks-sandbox.yml

@@ -1,0 +1,221 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/payments/references/billing-response-code
+docs:
+- https://docs.now.gg/payments/references/billing-response-code
+- https://docs.now.gg/payments/references/consumepurchase
+- https://docs.now.gg/payments/references/acknowledgepurchase
+- https://docs.now.gg/payments/references/verifypayment
+- https://docs.now.gg/user-account-service/api-reference
+- https://docs.now.gg/nowstudio/publish
+format: proprietary
+rfc9457: false
+note: >-
+  now.gg does not use RFC 9457 problem+json. Three different, mutually inconsistent
+  error envelopes are in use across the surfaces, and a fourth (the gateway envelope)
+  is returned with HTTP 200 for any unrouted path. Codes are namespaced only by
+  convention.
+envelopes:
+- name: payments-v2
+  applies_to: payments-api.now.gg v2 endpoints
+  http_status_carries_error: false
+  shape:
+    success: boolean
+    code: int
+    codeMsg: string
+    data: object
+  example: '{"success": true, "code": 0, "codeMsg": "success", "data": {}}'
+- name: payments-v1-deprecated
+  applies_to: payments.now.gg v1 verifyPayment (deprecated)
+  shape:
+    success: boolean
+    iap_error_code: int
+    iap_error_message: string
+    payload: object
+- name: accounts
+  applies_to: now.gg /accounts/* endpoints
+  shape:
+    success: boolean
+    code: string
+    msg: string
+    decodedData: object
+- name: gateway-catchall
+  applies_to: any unrouted path on payments-api.now.gg
+  http_status: 200
+  shape:
+    success: boolean
+    code: int
+    codeMsg: string
+    data: object
+    extra: object
+  example: '{"success":false,"code":150,"codeMsg":"interface not exist","data":{},"extra":{}}'
+  warning: >-
+    Returned with HTTP 200, so any client that branches on status code alone will treat
+    a routing failure as a success. Confirmed by probing a control path.
+problems:
+- code: 150
+  name: interface not exist
+  envelope: gateway-catchall
+  http_status: 200
+  meaning: The requested path is not routed by the payments gateway.
+  action: Check the path and version segment; do not rely on the HTTP status.
+- code: 0
+  name: success
+  envelope: payments-v2
+  meaning: Operation succeeded.
+- code: 412
+  name: No data found
+  envelope: payments-v1-deprecated
+  field: iap_error_code
+  meaning: No data found for the provided purchaseToken or orderId.
+  action: Verify the purchaseToken/orderId pair returned by the purchase flow.
+- code: 3800
+  name: ERROR_CONSUMING_PRODUCT
+  envelope: payments-v2
+  meaning: There was an error consuming the product.
+  operation: consumePurchase
+- code: 3900
+  name: INVALID_AUTHORIZATION_KEY
+  envelope: payments-v2
+  meaning: The API Key provided for authorization is invalid.
+  action: Re-copy the Payments API Key from the nowStudio credentials section.
+- code: 3901
+  name: INVALID_PURCHASE_TOKEN
+  envelope: payments-v2
+  meaning: The provided purchase token is invalid.
+- code: 5001
+  name: NO_VALID_SUBSCRIPTION_FOUND
+  envelope: payments-v2
+  meaning: No valid subscriptions found.
+  operation: acknowledgePurchase
+- code: 5002
+  name: INVALID_SUBSCRIPTION_OPERATION
+  envelope: payments-v2
+  meaning: The subscription operation is not valid.
+  operation: acknowledgePurchase
+- code: 5004
+  name: SUBSCRIPTION_INACTIVE
+  envelope: payments-v2
+  meaning: The requested subscription is inactive.
+  operation: acknowledgePurchase
+- code: 5006
+  name: ACTIVE_SUBSCRIPTION_ALREADY_EXISTS
+  envelope: payments-v2
+  meaning: An active subscription already exists.
+  operation: acknowledgePurchase
+- code: 5014
+  name: MULTISTORE_UNKNOWN_ERROR
+  envelope: payments-v2
+  meaning: Generic error from the Multistore API.
+- code: 5015
+  name: MULTISTORE_AUTH_ERROR
+  envelope: payments-v2
+  meaning: Error while generating auth/credentials for the Multistore API.
+- code: VERIFICATION_SUCCESS
+  envelope: accounts
+  meaning: Token verification succeeded against the client_id/client_secret.
+- code: INVALID_TOKEN
+  envelope: accounts
+  meaning: Token malformed, or `aud` does not match the client_id.
+- code: EXPIRED_TOKEN
+  envelope: accounts
+  meaning: Token expired.
+  action: Mint a new token with grant_type=refresh_token.
+- code: USERDATA
+  envelope: accounts
+  meaning: Success marker on userinfo and sessioninfo responses.
+billing_client_response_codes:
+  note: >-
+    Client-side codes returned by the nowSDK BillingClient
+    (gg.now.billingclient.api.BillingClient.BillingResponse), not by the REST API.
+  codes:
+  - code: 0
+    meaning: Successful operation.
+  - code: 1
+    meaning: Cancelled by the user, or the back button was pressed.
+  - code: 2
+    meaning: Network issue.
+  - code: 3
+    meaning: Billing API version not supported for the requested type.
+  - code: 4
+    meaning: Requested item is not available for purchase.
+  - code: 5
+    meaning: Invalid arguments, now.gg Billing Service setup issue, or permission issue.
+  - code: 6
+    meaning: Fatal error during execution.
+  - code: 7
+    meaning: Item already owned; purchase failure.
+  - code: 8
+    meaning: Item not owned and therefore cannot be consumed.
+  - code: -1
+    meaning: Service not connected (maintenance, or app in a transient state).
+  - code: -2
+    meaning: Requested feature not supported by now.gg Billing Service on this device.
+  - code: -3
+    meaning: Maximum timeouts occurred; billing service did not respond.
+  - code: 100
+    name: INVALID_PAYMENT_ID
+    meaning: Payment ID is invalid.
+  - code: 101
+    name: PRODUCT_NOT_FOUND_ON_STUDIO
+    meaning: Product was not found on nowStudio.
+  - code: 102
+    name: INVALID_PURCHASE_TOKEN
+    meaning: Provided purchase token is invalid.
+  - code: 103
+    name: PRODUCT_ALREADY_CONSUMED
+    meaning: Product is already consumed.
+  - code: 104
+    name: PRODUCT_ALREADY_ACKNOWLEDGED
+    meaning: Product is already acknowledged.
+  - code: 105
+    name: PRODUCT_NOT_CONSUMED
+    meaning: Purchased product was not consumed.
+  - code: 106
+    name: ACTIVE_SUBSCRIPTION_CANNOT_BE_PURCHASED_AGAIN
+    meaning: An active subscription cannot be purchased again.
+  - code: 107
+    name: NO_VALID_SUBSCRIPTION_FOUND
+    meaning: A valid subscription was not found.
+  - code: 108
+    name: PAYMENT_FAILED
+    meaning: Payment failed.
+  - code: 109
+    name: PAYMENT_CANCELLED
+    meaning: Payment was cancelled.
+  - code: 110
+    name: PAYMENT_TIMEOUT
+    meaning: Timeout during payment.
+  - code: 1000
+    name: INTERNAL_ERROR
+    meaning: An internal error occurred.
+publishing_error_codes:
+  note: Returned by nowStudio app publishing / build upload.
+  source: https://docs.now.gg/nowstudio/publish
+  codes:
+  - code: INTERNAL_ERROR
+    meaning: An internal error occurred. Retry or contact dev-support@now.gg.
+  - code: APP_PKG_NAME_MISMATCHED
+    meaning: Declared app package name does not match the APK package name.
+  - code: BUILD_VERSION_MISMATCHED
+    meaning: Declared version code does not match the APK version code.
+  - code: NETWORK_ERROR
+    meaning: Error downloading a file from the provided URL.
+  - code: EXCEEDED_TIMEOUT_LIMIT
+    meaning: The operation timed out.
+  - code: ZIP_FILE_FORMAT_INVALID
+    meaning: The provided Zip does not follow the prescribed format.
+  - code: FILE_EXTRACTION_FAILED
+    meaning: Unzip failed — APK missing, or multiple APKs present.
+  - code: METADATA_JSON_FORMAT_ERROR
+    meaning: metadata.json inside the Zip is not formatted correctly.
+  - code: INCORRECT_OBB_FILES_NAME
+    meaning: OBB files inside the Zip have incorrect file names.
+gaps:
+- No RFC 9457 problem+json anywhere.
+- Error codes overlap across namespaces — 102 and 3901 are both INVALID_PURCHASE_TOKEN,
+  107 and 5001 are both NO_VALID_SUBSCRIPTION_FOUND — with no rule for which surface
+  emits which.
+- Failures are signalled in the body while the HTTP status stays 200, including for
+  unrouted paths.
+- No consolidated error reference page; codes are scattered across per-endpoint pages.

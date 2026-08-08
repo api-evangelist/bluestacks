@@ -1,0 +1,106 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/payments/testing-integration
+docs:
+- https://docs.now.gg/payments/testing-integration
+- https://docs.now.gg/nowstudio/payments
+- https://docs.now.gg/nowstudio/webshop
+- https://docs.now.gg/user-account-service/testing-integration
+- https://docs.now.gg/rewarded-ads/testing-integration
+summary: >-
+  now.gg has no separate sandbox host and no test-mode API key. Test and live traffic
+  share the same endpoints and the same credentials; isolation is achieved by
+  addressing a test TRACK (an app-id suffix) and by allow-listing named tester
+  accounts. Purchases made this way are flagged on the wire with isTestOrder.
+separation:
+  model: track-and-tester, not key-prefix
+  separate_host: false
+  separate_key: false
+  key_prefixes: []
+  detail: >-
+    The same Payments API Key and the same payments-api.now.gg host serve both test
+    and production. There is no sk_test/sk_live style separation.
+test_tracks:
+  addressing: app-id suffix
+  format: <app_id>_t<N>
+  example: '1234_t1'
+  production_example: '1234'
+  detail: >-
+    Each test track has its own app_id. Passing the bare production app_id to the CLI
+    or to NowIfp.init targets production/App Library instead — the docs warn that the
+    upload silently lands in the App Library rather than erroring.
+  multiple_tracks: true
+  visibility: >-
+    Test-track app_id is only visible after the app has been deployed to that track.
+  secure_access:
+    modes:
+    - name: link
+      detail: Anyone with a link can access the app on the testing environment.
+    - name: restricted
+      detail: Only allowed users can access the app on the testing environment.
+test_users:
+  payments:
+    name: Internal Testers
+    added_by: email address of a now.gg account
+    where: All Apps > View Details > Internal Testers > Add Tester
+    detail: >-
+      Testers perform in-app purchases using now.gg-provided test currency and can
+      exercise the complete purchase flow.
+  webshop:
+    name: Testers
+    added_by: in-game user ID (IN_GAME_ID)
+    where: All Apps > View Details > Testers > Add Tester
+test_currency:
+  provided: true
+  detail: >-
+    now.gg supplies test currency to internal testers so a full purchase completes
+    without a real charge. No test card numbers, test IBANs or magic PANs are
+    published — the platform is a store front, not a card acquirer, so there is
+    nothing card-shaped to publish.
+wire_signal:
+  field: isTestOrder
+  type: boolean
+  appears_on:
+  - verifyPurchase response data
+  - verifyPayment response data
+  - SubscriptionStatusCallback payload
+  - PaymentsProcessingCallback payload
+  detail: The only way a backend can tell a test order from a live one.
+fixture_tooling:
+- name: Testing Webhook
+  where: All Apps > View Details > Payments > Testing Webhook
+  detail: >-
+    Fires a real SubscriptionStatusCallback at the configured callback URL for a given
+    order ID. Requires a subscription order that was placed by a test user.
+  triggerable_events:
+  - SUBSCRIPTION_RENEWED
+  - SUBSCRIPTION_EXPIRED
+  constraints:
+  - SUBSCRIPTION_RENEWED only works on an ACTIVE subscription; it will not renew an
+    expired or cancelled one.
+  - A triggered renewal creates a NEW order with a new order ID rather than reusing
+    the supplied one.
+  - Only subscription orders from a test user are eligible.
+- name: Sample app
+  where: nowStudio > All Apps
+  detail: >-
+    A read-only sample app preloaded with dummy data so a new publisher can walk the
+    publishing, Webshop, payments and analytics dashboards before shipping anything.
+  view_only: true
+- name: nowSDK demo project
+  artifacts:
+  - NowggSdkDemo
+  - NowggSdkDemo.apk
+  detail: Demo app and sample code shipped inside the nowSDK download bundle.
+  source: https://docs.now.gg/nowsdk/nowsdk-download
+time_simulation:
+  supported: partial
+  detail: >-
+    No general test clock. The Testing Webhook is the only time-travel affordance —
+    it can force a renewal or an expiry event without waiting for the billing period.
+gaps:
+- No sandbox host and no test-mode credential, so a misconfigured integration test can
+  reach production.
+- No published test card numbers or magic values.
+- No programmatic way to provision a tester or fire a webhook — both are console-only
+  actions.

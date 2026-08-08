@@ -1,0 +1,68 @@
+# BlueStacks AI & OpenClaw
+
+> **Fast. Secure. Cost-Controlled.** > BlueStacks AI is a personal AI runtime designed to solve the pain points of deploying AI agents.
+>
+> - **Lightning Fast Setup:** Get OpenClaw running on your PC and Mac in under 60 seconds.
+> - **Isolated Security:** It is secure by design. OpenClaw runs in an isolated container sandbox with strict permission boundaries, ensuring it has NO unauthorized access to your personal files, browser, or email.
+> - **Cost Guardrails:** Built-in daily spending limits so you never go overboard on unexpected token costs.
+
+## 1. Platform Overview
+
+BlueStacks AI provides a secure, locally-run runtime environment for deploying and managing AI agents like OpenClaw. It eliminates the friction of running AI agents by solving complex setups, API key management, unpredictable costs, and security vulnerabilities.
+
+* **Hardware Barrier:** Eliminates the need for dedicated AI machines. Runs agents locally on your existing Windows PC or Mac.
+* **Unified LLM Access:** Replaces juggling multiple API keys with "BlueStacks Prime" (a single subscription covering models and infrastructure).
+* **Workflow Layer:** Solves the "Now What?" problem with pre-built workflows, orchestration, and one-click automations.
+* **Model Optimization:** Employs smart routing, utilizing cheaper local models for simple tasks and frontier models for complex reasoning.
+
+## 2. Architecture Stack
+
+The BlueStacks AI Runtime Stack flows sequentially: **AI Agent → Runtime → Tools & Apps → Models → Memory**
+* **Agent Containers:** Isolated runtime environments for each agent.
+* **Model Access:** Unified gateway to leading AI models.
+* **Cost Governance:** Daily spending caps and usage analytics.
+* **Security Controls:** Permission boundaries and sandboxed execution.
+* **Workflow Layer:** Task orchestration.
+* **Model Optimization:** Smart routing logic.
+
+## 3. System Requirements
+
+**Windows:**
+* Disk Space: 12 GB
+* RAM: 16 GB (with at least 4GB free available)
+
+**macOS:**
+* Hardware: Mac M series (ARM)
+* Disk Space: 12 GB
+* OS: macOS 15.1 (Sequoia)
+
+## 4. Getting Started: Setup & Deployment
+
+1. **Download & Install:** Install the runtime from bluestacks.ai.
+2. **Create Instance:** Use the Multi-Instance Manager to create an OpenClaw instance and wait for it to download.
+3. **Security:** Set a local security password for the instance.
+4. **AI Configuration:** Choose how to power the agent:
+    * *BlueStacks Prime:* A unified subscription (includes 5,000 starting AI credits). Currently available in select regions.
+    * *Bring Your Own Key:* Use personal API keys from supported providers.
+5. **Telegram Integration (Optional but Recommended):** Users can chat with their PC-hosted OpenClaw from anywhere via mobile by creating a Telegram bot (via `@BotFather`), generating a token, and pairing it with the OpenClaw instance.
+6. **Launch:** Open the OpenClaw Dashboard and begin chatting.
+
+*Note: The runtime is free to use. Model costs depend on the user's chosen provider. The host PC must remain ON for the agent to function, even when interacting via Telegram.*
+
+## 5. Blog & Guides Index (/blog)
+
+The BlueStacks AI blog focuses on practical guides for running and optimizing OpenClaw:
+* **Getting Started:** *Get your OpenClaw AI Agent running on PC or Mac in under a minute with BlueStacks AI* (Pinned)
+* **Getting Started:** *Run OpenClaw AI Agent via BlueStacks AI Without Turning it into a Weekend Project.* * **Best Practices:** *OpenClaw on Your Machine: Best Practices to Follow*
+* **Workflows:** *What to Try First With OpenClaw: 10 Beginner Workflows You Can Setup Easily*
+* **Security:** *BlueStacks AI: A Safe Way to Run Your AI Agents Like OpenClaw on Your PC/Mac*
+* **Use Cases:** *The 6 OpenClaw Use Cases Alex Finn Swears By*
+* **Cost Optimization:** *What Actually Drives OpenClaw Cost and How to Optimize It Using BlueStacks Runtime AI*
+
+## 6. Official Links
+
+* **Website:** [bluestacks.ai](https://bluestacks.ai)
+* **Blog:** [bluestacks.ai/blog](https://bluestacks.ai/blog)
+* **Community:** [Discord](https://discord.gg/7UYxUPmk39)
+* **Twitter/X:** [@BlueClaw_AI](https://x.com/BlueClaw_AI)
+* **Downloads:** [Windows](https://cloud.bluestacks.com/api/getdownloadnow?platform=win&utm_source=blueai-webpage&utm_medium=home-download-button&download_page_referrer=https%3A%2F%2Fwww.bluestacks.ai%2F&utm_campaign=blueai-webpage-home-en&exit_utm_campaign=blueai-webpage-home-en&bluestacks_version=bs5) | [macOS](https://cloud.bluestacks.com/api/getdownloadnow?platform=mac&utm_source=blueai-webpage&utm_medium=home-download-button&download_page_referrer=https%3A%2F%2Fwww.bluestacks.ai%2F&utm_campaign=blueai-webpage-home-en&exit_utm_campaign=blueai-webpage-home-en&bluestacks_version=bs5)

@@ -1,0 +1,122 @@
+generated: '2026-08-08'
+method: searched
+source: https://docs.now.gg/
+note: >-
+  Assessed against the published documentation and live probes only. now.gg publishes
+  no OpenAPI, so nothing here is derived from a machine-readable contract. No
+  certifications, audit reports or compliance program (SOC 2, ISO 27001, PCI DSS,
+  HIPAA, FedRAMP, CSA STAR) were found on any bluestacks.com, now.gg or bluestacks.ai
+  host, and no trust center exists — so no Compliance pointer is claimed.
+standards:
+- id: oauth2
+  conforms: partial
+  evidence: >-
+    Authorization-code and refresh_token grants documented at
+    https://now.gg/accounts/oauth2/v1/token with client_id/client_secret. But the
+    token request is sent as an application/json BODY rather than the RFC 6749
+    application/x-www-form-urlencoded form encoding, uses a non-standard `token_type`
+    request parameter, and no authorization endpoint, redirect_uri, state or PKCE
+    handling is documented.
+  deviations:
+  - json-body-instead-of-form-encoded-token-request
+  - non-standard-token_type-request-parameter
+  - no-documented-authorization-endpoint
+  - no-pkce
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404 on now.gg and a soft-404
+    on payments-api.now.gg.
+- id: oidc
+  conforms: false
+  evidence: >-
+    An id_token is issued with recognisable OIDC claims (iss, sub, aud, exp, iat,
+    auth_time, email, name, picture), but there is no discovery document, no JWKS
+    endpoint and no local verification path — validation requires a server call to
+    now.gg's proprietary /accounts/oauth2/v1/verify-token.
+  deviations:
+  - no-discovery-document
+  - no-jwks-uri
+  - proprietary-verification-endpoint
+- id: rfc7235-http-authentication
+  conforms: false
+  evidence: >-
+    The Payments API sends the API key as a bare Authorization header value with no
+    auth-scheme token (documented as `Authorization: <payment_api_key_here>`).
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Proprietary {success, code, codeMsg, data} envelope; no application/problem+json
+    anywhere in the reference.
+- id: http-status-semantics
+  conforms: false
+  evidence: >-
+    Failures are returned with HTTP 200 and a false `success` field. An unrouted path
+    on payments-api.now.gg returns 200 with {"success":false,"code":150,"codeMsg":"interface
+    not exist"} — verified against a control path on 2026-08-08.
+- id: rfc9116-security-txt
+  conforms: partial
+  evidence: >-
+    A real security.txt is served from https://payments-api.now.gg/.well-known/security.txt
+    with Contact and Expires. It is expired (2022-12-31) and carries no Policy field,
+    and it is absent from the primary domains.
+  deviations:
+  - expired
+  - no-policy-field
+  - not-on-primary-domain
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: Endpoints are marked deprecated in prose only; no Sunset or Deprecation
+    response headers and no removal dates.
+- id: rfc8615-well-known-uris
+  conforms: partial
+  evidence: >-
+    security.txt is correctly placed under /.well-known/ on the payments host, but
+    www.bluestacks.com returns 403 for the entire /.well-known/ prefix while returning
+    a clean 404 for ordinary unknown paths — the edge blocks well-known discovery.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI/Swagger document at any probed location on now.gg, payments-api.now.gg,
+    payments.now.gg, docs.now.gg or www.bluestacks.com.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    Two webhook contracts are documented in prose; no AsyncAPI is published. A derived
+    transcription is held at asyncapi/bluestacks-payments-asyncapi.yml.
+- id: json-api
+  conforms: false
+- id: graphql
+  conforms: false
+  evidence: No /graphql surface documented or discovered.
+- id: mcp
+  conforms: false
+  evidence: >-
+    No MCP server. tools/list POSTs to now.gg/mcp, mcp.now.gg, payments-api.now.gg/mcp
+    and bluestacks.ai/mcp all missed.
+- id: a2a
+  conforms: false
+  evidence: >-
+    No agent card at /.well-known/agent-card.json or /.well-known/agent.json on any of
+    the five hosts probed.
+- id: llms-txt
+  conforms: partial
+  evidence: >-
+    A real llms.txt is published at https://bluestacks.ai/llms.txt, but it describes
+    the BlueStacks AI runtime product only. The developer docs host publishes none.
+- id: webhook-signatures
+  conforms: false
+  evidence: >-
+    Callbacks are authenticated with a static shared key in the Authorization header;
+    no HMAC body signature and no timestamp, so deliveries are replayable.
+compliance_program:
+  published: false
+  certifications: []
+  trust_center: null
+  probed:
+  - url: https://trust.bluestacks.com/
+    result: not found
+  - url: https://www.bluestacks.com/security
+    result: not found
+  note: >-
+    probe-security-programs.py returned vdp=none trust=none for this provider on
+    2026-08-08 beyond the security.txt recorded above.

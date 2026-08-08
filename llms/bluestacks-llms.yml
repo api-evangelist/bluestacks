@@ -1,0 +1,36 @@
+generated: '2026-08-08'
+method: searched
+source: https://bluestacks.ai/llms.txt
+file: bluestacks-llms.txt
+verbatim: true
+x-evidence:
+  fetched: '2026-08-08'
+  url: https://bluestacks.ai/llms.txt
+  http_status: 200
+  content_type: text/plain
+  bytes: 4766
+scope: >-
+  IMPORTANT — this llms.txt is published by BlueStacks AI (bluestacks.ai), the AI-agent
+  runtime product, and describes that product only: the OpenClaw sandboxed runtime,
+  BlueStacks Prime model access, system requirements and the blog index. It does NOT
+  describe the now.gg developer platform, nowStudio, nowSDK, the User Account Service
+  API or the Payments API. Do not read it as a machine-readable index of the API
+  surface documented at docs.now.gg.
+hosts_probed:
+- url: https://bluestacks.ai/llms.txt
+  status: 200
+  real: true
+- url: https://www.bluestacks.ai/llms.txt
+  status: 200
+  real: false
+  note: SPA catch-all returns the HTML shell for every path
+- url: https://docs.now.gg/llms.txt
+  status: 405
+- url: https://now.gg/llms.txt
+  status: 404
+- url: https://www.bluestacks.com/llms.txt
+  status: 404
+gaps:
+- The developer docs host (docs.now.gg) publishes no llms.txt, so the 86-page API
+  reference has no agent-readable index.
+- No llms-full.txt is published at the apex (the www host's 200 is an HTML shell).
