@@ -26,6 +26,19 @@ tags:
 - Mobile
 - Payments
 - In-App Purchases
+- Subscription
+- Developer Platform
+- App Distribution
+- Advertising
+- Authentication
+tags_raw:
+- Company
+- Gaming
+- Cloud Gaming
+- Android
+- Mobile
+- Payments
+- In-App Purchases
 - Subscriptions
 - Developer Platform
 - App Distribution
@@ -40,6 +53,10 @@ apis:
   humanURL: https://docs.now.gg/user-account-service/api-reference
   baseURL: https://now.gg
   tags:
+  - Authentication
+  - Identity
+  - User
+  tags_raw:
   - Authentication
   - OAuth
   - Identity
@@ -64,6 +81,11 @@ apis:
   humanURL: https://docs.now.gg/payments/references
   baseURL: https://payments-api.now.gg
   tags:
+  - Payments
+  - In-App Purchases
+  - Subscription
+  - Billing
+  tags_raw:
   - Payments
   - In-App Purchases
   - Subscriptions
