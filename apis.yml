@@ -11,6 +11,17 @@ description: 'BlueStacks is the Android app player and mobile-cloud gaming platf
   webhooks for subscription and webshop order events, ships an official nowgg CLI on PyPI for uploading
   app builds, and publishes an embeddable JavaScript module for running cloud games in an iframe. BlueStacks
   AI is a separate, newer product line that packages a sandboxed local runtime for AI agents.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://cdn-www.bluestacks.com/bs-images/logo-icon.png
 url: https://raw.githubusercontent.com/api-evangelist/bluestacks/refs/heads/main/apis.yml
 x-type: company
